@@ -43,3 +43,18 @@ export const deleteTask = async (req, res) => {
         res.status(500).json({ message: "Error deleting task", error });
     }
 };
+
+// Fetch tasks marked as "Add to Calendar"
+export const getTasksForCalendar = async (req, res) => {
+    try {
+        const tasks = await Task.findAll({
+            where: {
+                userId: req.user.userId,
+                addToCalendar: true,
+            },
+        });
+        res.status(200).json(tasks);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching tasks for calendar", error });
+    }
+};

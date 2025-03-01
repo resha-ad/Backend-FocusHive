@@ -8,7 +8,7 @@ import User from "./models/User.js"; // Import models
 import authRoutes from "./routes/authRoutes.js";
 // import adminRoutes from "./routes/adminRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
-// import calendarRoutes from "./routes/calendarRoutes.js";
+import calendarRoutes from "./routes/calendarRoutes.js";
 // import focusRoutes from "./routes/focusRoutes.js";
 
 dotenv.config();
@@ -27,7 +27,7 @@ db().then(() => {
     app.use("/api/auth", authRoutes);
     app.use("/api/tasks", taskRoutes);
     // app.use("/api/admin", adminRoutes);
-    // app.use("/api/calendar", calendarRoutes);
+    app.use("/api/calendar", calendarRoutes);
     // app.use("/api/focus", focusRoutes);
 
     // Start the server
