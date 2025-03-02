@@ -33,6 +33,11 @@ export const saveSession = async (req, res) => {
     const { sessionDuration } = req.body;
 
     try {
+
+        if (!sessionDuration || sessionDuration <= 0) {
+            return res.status(400).json({ message: "Invalid session duration" });
+        }
+
         const focusSession = await FocusTimer.create({
             userId: req.user.userId,
             sessionDuration,
@@ -47,7 +52,12 @@ export const saveSession = async (req, res) => {
 // Get focus timer settings
 export const getSettings = async (req, res) => {
     try {
-        const focusTimer = await FocusTimer.findOne({ where: { userId: req.user.userId } });
+
+        const focusTimer = await FocusTimer.findOne({
+            where: { userId: req.user.userId },
+            order: [['updatedAt', 'DESC']], // Fetch the latest settings
+        });
+
 
         if (!focusTimer) {
             // Return default settings if no record is found
@@ -71,7 +81,8 @@ export const getSessions = async (req, res) => {
     try {
         const sessions = await FocusTimer.findAll({
             where: { userId: req.user.userId },
-            attributes: ["sessionDuration", "sessionDate"],
+            attributes: ["id", "sessionDuration", "sessionDate"],
+            order: [["createdAt", "DESC"]], // Sort by most recent
         });
 
         res.status(200).json({ sessions });
@@ -94,5 +105,28 @@ export const getSessionById = async (req, res) => {
         res.status(200).json({ session });
     } catch (error) {
         res.status(500).json({ message: "Error fetching session", error });
+    }
+};
+
+// delete session
+export const deleteSession = async (req, res) => {
+    try {
+        const sessionId = req.params.id;
+        const userId = req.user.userId;
+
+        console.log("Deleting session:", sessionId, "for user:", userId); // Debug log
+
+        const deletedSession = await FocusTimer.destroy({
+            where: { id: sessionId, userId },
+        });
+
+        if (!deletedSession) {
+            return res.status(404).json({ message: "Session not found" });
+        }
+
+        res.status(200).json({ message: "Session deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting session:", error); // Debug log
+        res.status(500).json({ message: "Error deleting session", error });
     }
 };

@@ -44,7 +44,31 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Find user by email
+        // Check if the provided email and password match the admin credentials
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            // Create or find the admin user
+            let adminUser = await User.findOne({ where: { email: process.env.ADMIN_EMAIL } });
+
+            if (!adminUser) {
+                // If the admin user doesn't exist, create one
+                adminUser = await User.create({
+                    fullName: "Admin",
+                    username: "admin",
+                    email: process.env.ADMIN_EMAIL,
+                    password: await bcrypt.hash(process.env.ADMIN_PASSWORD, 10), // Hash the admin password
+                    isAdmin: true, // Set as admin
+                });
+            }
+
+            // Generate JWT token
+            const token = jwt.sign({ userId: adminUser.id, isAdmin: true }, process.env.JWT_SECRET, {
+                expiresIn: "1h",
+            });
+
+            return res.status(200).json({ user: adminUser, token });
+        }
+
+        // For regular users
         const user = await User.findOne({ where: { email } });
         if (!user) {
             return res.status(400).json({ message: "Invalid credentials" });

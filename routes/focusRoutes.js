@@ -5,7 +5,8 @@ import {
     saveSession,
     getSettings,
     getSessions,
-    getSessionById, // Add this import
+    getSessionById,
+    deleteSession
 } from "../controllers/focusTimerController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
@@ -27,6 +28,9 @@ router.get("/settings", getSettings);
 router.get("/sessions", getSessions);
 
 // Get a specific focus session by ID
-router.get("/session/:id", getSessionById); // Add this route
+router.get("/session/:id", getSessionById);
+
+//get focus session to delete
+router.delete("/session/:id", deleteSession);
 
 export default router;
