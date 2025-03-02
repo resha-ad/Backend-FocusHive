@@ -1,3 +1,4 @@
+// models/FocusTimer.js
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
@@ -23,7 +24,7 @@ const FocusTimer = sequelize.define(
         },
         sessionDuration: {
             type: DataTypes.INTEGER, // Duration of the focus session (in minutes)
-            allowNull: false,
+            allowNull: true, // Make it optional
         },
         sessionDate: {
             type: DataTypes.DATE, // Date of the focus session
@@ -32,10 +33,6 @@ const FocusTimer = sequelize.define(
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            references: {
-                model: "users", // Match the table name in the User model
-                key: "id",
-            },
         },
     },
     {

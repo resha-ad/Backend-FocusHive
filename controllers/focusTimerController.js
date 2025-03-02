@@ -1,3 +1,4 @@
+// controllers/focusTimerController.js
 import FocusTimer from "../models/FocusTimer.js";
 
 // Save focus timer settings
@@ -5,6 +6,9 @@ export const saveSettings = async (req, res) => {
     const { pomodoroDuration, shortBreakDuration, longBreakDuration } = req.body;
 
     try {
+        console.log("Request body:", req.body); // Log the request body
+        console.log("User ID:", req.user.userId); // Log the user ID
+
         // Update or create focus timer settings
         const [focusTimer, created] = await FocusTimer.findOrCreate({
             where: { userId: req.user.userId },
@@ -17,9 +21,9 @@ export const saveSettings = async (req, res) => {
             focusTimer.longBreakDuration = longBreakDuration;
             await focusTimer.save();
         }
-
         res.status(200).json({ message: "Settings saved successfully", focusTimer });
     } catch (error) {
+        console.error("Error saving settings:", error); // Log the error
         res.status(500).json({ message: "Error saving settings", error });
     }
 };
@@ -44,8 +48,16 @@ export const saveSession = async (req, res) => {
 export const getSettings = async (req, res) => {
     try {
         const focusTimer = await FocusTimer.findOne({ where: { userId: req.user.userId } });
+
         if (!focusTimer) {
-            return res.status(404).json({ message: "Settings not found" });
+            // Return default settings if no record is found
+            return res.status(200).json({
+                focusTimer: {
+                    pomodoroDuration: 25,
+                    shortBreakDuration: 5,
+                    longBreakDuration: 15,
+                },
+            });
         }
 
         res.status(200).json({ focusTimer });
@@ -65,5 +77,22 @@ export const getSessions = async (req, res) => {
         res.status(200).json({ sessions });
     } catch (error) {
         res.status(500).json({ message: "Error fetching sessions", error });
+    }
+};
+
+// Get a specific focus session by ID
+export const getSessionById = async (req, res) => {
+    try {
+        const session = await FocusTimer.findOne({
+            where: { id: req.params.id, userId: req.user.userId },
+        });
+
+        if (!session) {
+            return res.status(404).json({ message: "Session not found" });
+        }
+
+        res.status(200).json({ session });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching session", error });
     }
 };
