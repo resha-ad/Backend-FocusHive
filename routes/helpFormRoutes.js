@@ -1,6 +1,6 @@
 // routes/helpFormRoutes.js
 import express from "express";
-import { submitHelpForm, getAllHelpForms, updateRemarks } from "../controllers/helpFormController.js";
+import { submitHelpForm, getAllHelpForms, updateRemarks, deleteHelpForm } from "../controllers/helpFormController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -18,3 +18,5 @@ router.put("/update-remarks/:id", authMiddleware, updateRemarks);
 router.delete("/delete/:id", authMiddleware, deleteHelpForm);
 
 export default router;
+
+

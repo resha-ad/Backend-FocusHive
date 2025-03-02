@@ -3,10 +3,10 @@ import HelpForm from "../models/HelpForm.js";
 
 // Submit Help Form
 export const submitHelpForm = async (req, res) => {
-    const { name, email, message } = req.body;
+    const { name, email, subject, message } = req.body;
 
     try {
-        const newHelpForm = await HelpForm.create({ name, email, message });
+        const newHelpForm = await HelpForm.create({ name, email, subject, message });
         res.status(201).json(newHelpForm);
     } catch (error) {
         res.status(500).json({ message: "Error submitting help form", error });
